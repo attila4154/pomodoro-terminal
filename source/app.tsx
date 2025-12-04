@@ -9,6 +9,7 @@ function App() {
 	const app = useApp();
 
 	const [view, setView] = useState('setup');
+	// todo: rename init for more readability
 	const [init, setInit] = useState(0);
 
 	useInput((_, key) => {

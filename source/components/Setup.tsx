@@ -1,11 +1,13 @@
 import {Text, useInput} from 'ink';
 import React from 'react';
 
+// todo: add custom times
 export function Setup({
 	setInit,
 }: {
 	setInit: React.Dispatch<React.SetStateAction<number>>;
 }) {
+  // todo: return both focus/rest times instead
 	useInput(input => {
 		if (input === '1') {
 			setInit(25 * 60);

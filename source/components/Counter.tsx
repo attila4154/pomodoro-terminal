@@ -1,6 +1,7 @@
 import {Box, Text, useInput} from 'ink';
 import React, {useEffect, useState} from 'react';
 
+// todo: always display 2 digits here
 function getPrintableTime(time: number) {
 	const minutes = Math.floor(time / 60);
 	const seconds = time % 60;
@@ -8,6 +9,7 @@ function getPrintableTime(time: number) {
 	return `${minutes}:${seconds}`;
 }
 
+// todo: add footer with keyboard help
 export function Counter({init}: {init: number}) {
 	const [currentTime, setCurrentTime] = useState(init);
 	const [isRunning, setIsRunning] = useState(false);
@@ -36,6 +38,7 @@ export function Counter({init}: {init: number}) {
 				<Text>🍅 {getPrintableTime(currentTime)}</Text>
 			</Box>
 			<Box>
+				{/* todo: conditionally render start or pause */}
 				<Text>Press space to start/pause</Text>
 			</Box>
 		</>
