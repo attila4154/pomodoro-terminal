@@ -39,8 +39,7 @@ export function Counter({init}: {init: number}) {
 				<Text>🍅 {getPrintableTime(currentTime)}</Text>
 			</Box>
 			<Box>
-				{/* todo: conditionally render start or pause */}
-				<Text>Press space to start/pause</Text>
+				<Text>Press space to {isRunning ? 'pause' : 'start'}</Text>
 			</Box>
 		</>
 	);
