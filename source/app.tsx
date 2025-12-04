@@ -65,14 +65,14 @@ function Counter({init}: {init: number}) {
 	});
 
 	return (
-		<CenteredBox>
+		<>
 			<Box borderStyle="round" paddingRight={2} paddingLeft={2}>
 				<Text>🍅 {getPrintableTime(currentTime)}</Text>
 			</Box>
 			<Box>
 				<Text>Press space to start/pause</Text>
 			</Box>
-		</CenteredBox>
+		</>
 	);
 }
 
@@ -134,8 +134,8 @@ process.stdout.write('\x1Bc'); // ANSI clear screen
 
 export default function () {
 	return (
-		<Box width={'100%'} height={'100%'}>
+		<CenteredBox>
 			<App />
-		</Box>
+		</CenteredBox>
 	);
 }
