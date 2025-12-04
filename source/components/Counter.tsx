@@ -1,5 +1,7 @@
 import {Box, Text, useInput} from 'ink';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
+import {OnKeyPressActions} from '../util/terminal.js';
+import {CenteredBox} from './util/CenteredBox.js';
 
 function getPrintableTime(time: number) {
 	const minutes = Math.floor(time / 60);
@@ -10,8 +12,13 @@ function getPrintableTime(time: number) {
 		.padStart(2, '0')}`;
 }
 
-// todo: add footer with keyboard help
-export function Counter({init}: {init: number}) {
+export function Counter({
+	init,
+	parentActions,
+}: {
+	init: number;
+	parentActions: OnKeyPressActions;
+}) {
 	const [currentTime, setCurrentTime] = useState(init);
 	const [isRunning, setIsRunning] = useState(false);
 
@@ -24,22 +31,41 @@ export function Counter({init}: {init: number}) {
 		return () => {};
 	}, [isRunning]);
 
+	function reset() {
+		setIsRunning(false);
+		setCurrentTime(init);
+	}
+
+	const actions: OnKeyPressActions = useMemo(
+		() => ({
+			' ': ['start/pause', () => setIsRunning(prev => !prev)],
+			r: ['reset', reset],
+		}),
+		[],
+	);
+	const allActions = {...parentActions, ...actions};
+
 	useInput(input => {
-		if (input === ' ') {
-			setIsRunning(prev => !prev);
-		} else if (input === 'r') {
-			setIsRunning(false);
-			setCurrentTime(init);
+		const action = actions[input];
+		if (action) {
+			action[1]();
 		}
 	});
 
 	return (
 		<>
-			<Box borderStyle="round" paddingRight={2} paddingLeft={2}>
-				<Text>🍅 {getPrintableTime(currentTime)}</Text>
-			</Box>
-			<Box>
-				<Text>Press space to {isRunning ? 'pause' : 'start'}</Text>
+			<CenteredBox>
+				<Box borderStyle="round" paddingRight={2} paddingLeft={2}>
+					<Text>🍅 {getPrintableTime(currentTime)}</Text>
+				</Box>
+			</CenteredBox>
+			{/* todo: there is probably a better way to do it, most likely in parent too */}
+			<Box height={1} borderTop justifyContent="center" gap={3}>
+				{Object.entries(allActions).map(([key, [description]]) => (
+					<Text key={key}>
+						[{key}]: {description}
+					</Text>
+				))}
 			</Box>
 		</>
 	);

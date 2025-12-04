@@ -1,9 +1,8 @@
 import {Text, useApp, useInput} from 'ink';
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {Counter} from './components/Counter.js';
-import {clearScreen} from './util/terminal.js';
-import { Setup } from './components/Setup.js';
-import { CenteredBox } from './components/util/CenteredBox.js';
+import {Setup} from './components/Setup.js';
+import {clearScreen, OnKeyPressActions} from './util/terminal.js';
 
 function App() {
 	const app = useApp();
@@ -12,15 +11,33 @@ function App() {
 	// todo: rename init for more readability
 	const [init, setInit] = useState(0);
 
-	useInput((_, key) => {
+	function quit() {
+		clearScreen();
+		setView('over');
+		setTimeout(() => {
+			app.exit();
+			clearScreen();
+		}, 500);
+	}
+
+	useInput((input, key) => {
 		if (key.escape) {
-			setView('over');
-			setTimeout(() => {
-				app.exit();
-				clearScreen();
-			}, 500);
+			quit();
+			return;
+		}
+
+		const action = actions[input];
+		if (action) {
+			action[1]();
 		}
 	});
+
+	const actions: OnKeyPressActions = useMemo(
+		() => ({
+			q: ['quit', quit],
+		}),
+		[],
+	);
 
 	if (view === 'setup') {
 		return (
@@ -33,7 +50,7 @@ function App() {
 		);
 	}
 	if (view === 'counter') {
-		return <Counter init={init} />;
+		return <Counter init={init} parentActions={actions} />;
 	}
 	if (view === 'over') {
 		return <Text>Bye!</Text>;
@@ -43,10 +60,7 @@ function App() {
 
 clearScreen();
 
+// todo: add some dummy header
 export default function () {
-	return (
-		<CenteredBox>
-			<App />
-		</CenteredBox>
-	);
+	return <App />;
 }

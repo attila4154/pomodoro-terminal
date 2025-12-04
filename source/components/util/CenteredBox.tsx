@@ -7,8 +7,8 @@ export function CenteredBox({children}: {children: React.ReactNode}) {
 	return (
 		<Box
 			// todo: remove - 2
-			height={stdout.rows - 2}
-			width={stdout.columns - 2}
+			height={stdout.rows}
+			width={stdout.columns}
 			justifyContent="center"
 			alignItems="center"
 			flexDirection="column"

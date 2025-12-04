@@ -1,5 +1,7 @@
 import notifier from 'node-notifier';
 
+export type OnKeyPressActions = Record<string, [string, () => void]>;
+
 export function notify() {
 	// try {
 	// 	exec(
