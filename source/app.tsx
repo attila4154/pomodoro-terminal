@@ -1,29 +1,12 @@
 import {Box, Text, useApp, useInput, useStdout} from 'ink';
-import notifier from 'node-notifier';
 import React, {useEffect, useState} from 'react';
+import {clearScreen} from './util/terminal.js';
 
 function getPrintableTime(time: number) {
 	const minutes = Math.floor(time / 60);
 	const seconds = time % 60;
 
 	return `${minutes}:${seconds}`;
-}
-
-async function notify() {
-	// try {
-	// 	exec(
-	// 		`osascript -e 'display notification "Done cooking!" with title "Kitchen Terminal"'`,
-	// 	);
-	// } catch (e) {
-	// 	console.log(e);
-	// }
-
-	process.stdout.write('\x07'); // ASCII bell
-	notifier.notify({
-		title: 'My notification',
-		message: 'Hello, there!',
-		time: 100000,
-	});
 }
 
 function CenteredBox({children}: {children: React.ReactNode}) {
@@ -106,7 +89,7 @@ function App() {
 			setView('over');
 			setTimeout(() => {
 				app.exit();
-				process.stdout.write('\x1Bc'); // ANSI clear screen
+				clearScreen();
 			}, 500);
 		}
 	});
@@ -130,7 +113,7 @@ function App() {
 	return null;
 }
 
-process.stdout.write('\x1Bc'); // ANSI clear screen
+clearScreen();
 
 export default function () {
 	return (
