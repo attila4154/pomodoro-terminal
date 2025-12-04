@@ -1,12 +1,13 @@
 import {Box, Text, useInput} from 'ink';
 import React, {useEffect, useState} from 'react';
 
-// todo: always display 2 digits here
 function getPrintableTime(time: number) {
 	const minutes = Math.floor(time / 60);
 	const seconds = time % 60;
 
-	return `${minutes}:${seconds}`;
+	return `${minutes.toString().padStart(2, '0')}:${seconds
+		.toString()
+		.padStart(2, '0')}`;
 }
 
 // todo: add footer with keyboard help
