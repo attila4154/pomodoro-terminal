@@ -1,12 +1,19 @@
-import {Text, useApp, useInput} from 'ink';
-import React, {useMemo, useState} from 'react';
+import {Text, useApp} from 'ink';
+import React, {useContext, useEffect, useState} from 'react';
+import {ActionsFooter} from './components/ActionsFooter.js';
 import {Counter} from './components/Counter.js';
 import {Setup} from './components/Setup.js';
 import {CenteredBox} from './components/util/CenteredBox.js';
-import {clearScreen, OnKeyPressActions} from './util/terminal.js';
+import {
+	KeyPressActionContext,
+	KeyPressActionProvider,
+} from './context/KeyPressActionContext.js';
+import {useAllInput} from './hooks/useAllInput.js';
+import {clearScreen} from './util/terminal.js';
 
 function App() {
 	const app = useApp();
+	const {register, unregister} = useContext(KeyPressActionContext);
 
 	const [view, setView] = useState('setup');
 	// todo: rename init for more readability
@@ -21,46 +28,31 @@ function App() {
 		}, 500);
 	}
 
-	useInput((input, key) => {
-		if (key.escape) {
-			quit();
-			return;
-		}
+	useEffect(() => {
+		register('q', 'quit', quit);
 
-		const action = actions[input];
-		if (action) {
-			action[1]();
-		}
-	});
+		return () => {
+			unregister('q');
+		};
+	}, [register]);
 
-	const actions: OnKeyPressActions = useMemo(
-		() => ({
-			q: ['quit', quit],
-		}),
-		[],
-	);
+	useAllInput();
 
 	if (view === 'setup') {
 		return (
-			<CenteredBox>
-				<Setup
-					setInit={n => {
-						setView('counter');
-						return setInit(n);
-					}}
-				/>
-			</CenteredBox>
+			<Setup
+				setInit={n => {
+					setView('counter');
+					return setInit(n);
+				}}
+			/>
 		);
 	}
 	if (view === 'counter') {
-		return <Counter init={init} parentActions={actions} />;
+		return <Counter init={init} />;
 	}
 	if (view === 'over') {
-		return (
-			<CenteredBox>
-				<Text>Bye!</Text>
-			</CenteredBox>
-		);
+		return <Text>Bye!</Text>;
 	}
 	return null;
 }
@@ -69,5 +61,12 @@ clearScreen();
 
 // todo: add some dummy header
 export default function () {
-	return <App />;
+	return (
+		<KeyPressActionProvider>
+			<CenteredBox>
+				<App />
+			</CenteredBox>
+			<ActionsFooter />
+		</KeyPressActionProvider>
+	);
 }

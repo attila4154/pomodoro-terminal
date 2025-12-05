@@ -1,7 +1,7 @@
-import {Box, Text, useInput} from 'ink';
-import React, {useEffect, useMemo, useState} from 'react';
-import {notify, OnKeyPressActions} from '../util/terminal.js';
-import {CenteredBox} from './util/CenteredBox.js';
+import {Box, Text} from 'ink';
+import React, {useContext, useEffect, useState} from 'react';
+import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
+import {notify} from '../util/terminal.js';
 
 function getPrintableTime(time: number) {
 	const minutes = Math.floor(time / 60);
@@ -12,13 +12,8 @@ function getPrintableTime(time: number) {
 		.padStart(2, '0')}`;
 }
 
-export function Counter({
-	init,
-	parentActions,
-}: {
-	init: [number, number];
-	parentActions: OnKeyPressActions;
-}) {
+export function Counter({init}: {init: [number, number]}) {
+	const {register, unregister} = useContext(KeyPressActionContext);
 	const [focusTime, restTime] = init;
 	const [currentTime, setCurrentTime] = useState(focusTime);
 	const [isRunning, setIsRunning] = useState(false);
@@ -52,46 +47,32 @@ export function Counter({
 		setCurrentTime(isFocus ? focusTime : restTime);
 	}
 
-	const actions: OnKeyPressActions = useMemo(
-		() => ({
-			' ': ['start/pause', () => setIsRunning(prev => !prev)],
-			r: ['reset', reset],
-		}),
-		[],
-	);
-	const allActions = {...parentActions, ...actions};
+	useEffect(() => {
+		register(' ', isRunning ? 'pause' : 'start', () =>
+			setIsRunning(prev => !prev),
+		);
+		register('r', 'reset', reset);
 
-	useInput(input => {
-		const action = actions[input];
-		if (action) {
-			action[1]();
-		}
-	});
+		return () => {
+			unregister(' ');
+			unregister('r');
+		};
+	}, [register, setIsRunning, isRunning]);
 
 	return (
 		<>
-			<CenteredBox>
-				<Box>
-					<Text>{isFocus ? 'Lock-in' : 'Chill'} </Text>
-				</Box>
-				<Box
-					borderStyle="round"
-					paddingRight={2}
-					paddingLeft={2}
-					borderColor={isFocus ? 'red' : 'greenBright'}
-				>
-					<Text color={isFocus ? 'red' : 'greenBright'}>
-						🍅 {getPrintableTime(currentTime)}
-					</Text>
-				</Box>
-			</CenteredBox>
-			{/* todo: there is probably a better way to do it, most likely in parent too */}
-			<Box height={1} borderTop justifyContent="center" gap={3}>
-				{Object.entries(allActions).map(([key, [description]]) => (
-					<Text key={key}>
-						[{key}]: {description}
-					</Text>
-				))}
+			<Box>
+				<Text>{isFocus ? 'Lock-in' : 'Chill'} </Text>
+			</Box>
+			<Box
+				borderStyle="round"
+				paddingRight={2}
+				paddingLeft={2}
+				borderColor={isFocus ? 'red' : 'greenBright'}
+			>
+				<Text color={isFocus ? 'red' : 'greenBright'}>
+					🍅 {getPrintableTime(currentTime)}
+				</Text>
 			</Box>
 		</>
 	);
