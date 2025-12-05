@@ -5,14 +5,15 @@ import React from 'react';
 export function Setup({
 	setInit,
 }: {
-	setInit: React.Dispatch<React.SetStateAction<number>>;
+	setInit: React.Dispatch<React.SetStateAction<[number, number]>>;
 }) {
-  // todo: return both focus/rest times instead
 	useInput(input => {
 		if (input === '1') {
-			setInit(25 * 60);
+			setInit([25 * 60, 5 * 60]);
 		} else if (input === '2') {
-			setInit(50 * 60);
+			setInit([50 * 60, 10 * 60]);
+		} else if (input === '3') {
+			setInit([10, 10]);
 		}
 	});
 	return (

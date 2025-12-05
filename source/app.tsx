@@ -2,6 +2,7 @@ import {Text, useApp, useInput} from 'ink';
 import React, {useMemo, useState} from 'react';
 import {Counter} from './components/Counter.js';
 import {Setup} from './components/Setup.js';
+import {CenteredBox} from './components/util/CenteredBox.js';
 import {clearScreen, OnKeyPressActions} from './util/terminal.js';
 
 function App() {
@@ -9,7 +10,7 @@ function App() {
 
 	const [view, setView] = useState('setup');
 	// todo: rename init for more readability
-	const [init, setInit] = useState(0);
+	const [init, setInit] = useState<[number, number]>([0, 0]);
 
 	function quit() {
 		clearScreen();
@@ -41,19 +42,25 @@ function App() {
 
 	if (view === 'setup') {
 		return (
-			<Setup
-				setInit={n => {
-					setView('counter');
-					return setInit(n);
-				}}
-			/>
+			<CenteredBox>
+				<Setup
+					setInit={n => {
+						setView('counter');
+						return setInit(n);
+					}}
+				/>
+			</CenteredBox>
 		);
 	}
 	if (view === 'counter') {
 		return <Counter init={init} parentActions={actions} />;
 	}
 	if (view === 'over') {
-		return <Text>Bye!</Text>;
+		return (
+			<CenteredBox>
+				<Text>Bye!</Text>
+			</CenteredBox>
+		);
 	}
 	return null;
 }

@@ -2,19 +2,11 @@ import notifier from 'node-notifier';
 
 export type OnKeyPressActions = Record<string, [string, () => void]>;
 
-export function notify() {
-	// try {
-	// 	exec(
-	// 		`osascript -e 'display notification "Done cooking!" with title "Kitchen Terminal"'`,
-	// 	);
-	// } catch (e) {
-	// 	console.log(e);
-	// }
-
+export function notify(msg: string) {
 	process.stdout.write('\x07'); // ASCII bell
 	notifier.notify({
-		title: 'My notification',
-		message: 'Hello, there!',
+		title: 'Pomodoro',
+		message: msg,
 		time: 100000,
 	});
 }

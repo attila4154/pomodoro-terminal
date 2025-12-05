@@ -1,6 +1,6 @@
 import {Box, Text, useInput} from 'ink';
 import React, {useEffect, useMemo, useState} from 'react';
-import {OnKeyPressActions} from '../util/terminal.js';
+import {notify, OnKeyPressActions} from '../util/terminal.js';
 import {CenteredBox} from './util/CenteredBox.js';
 
 function getPrintableTime(time: number) {
@@ -16,24 +16,40 @@ export function Counter({
 	init,
 	parentActions,
 }: {
-	init: number;
+	init: [number, number];
 	parentActions: OnKeyPressActions;
 }) {
-	const [currentTime, setCurrentTime] = useState(init);
+	const [focusTime, restTime] = init;
+	const [currentTime, setCurrentTime] = useState(focusTime);
 	const [isRunning, setIsRunning] = useState(false);
+	const [isFocus, setIsFocus] = useState(true);
 
 	useEffect(() => {
 		if (isRunning) {
-			const id = setInterval(() => setCurrentTime(prev => prev - 1), 1000);
+			const id = setInterval(() => {
+				if (currentTime > 0) {
+					setCurrentTime(prev => prev - 1);
+				} else {
+					// 1. notify
+					notify(isFocus ? 'Lock-in over!' : 'Time to cook');
+					// 2. print something
+					// 3. switch times
+					setIsFocus(prev => !prev);
+					reset();
+					// 4. session counter or something
+					// 5. add to history
+				}
+			}, 1000);
 			return () => clearInterval(id);
 		}
 
 		return () => {};
-	}, [isRunning]);
+	}, [isRunning, isFocus, currentTime]);
 
+	// todo: add are you sure popup
 	function reset() {
 		setIsRunning(false);
-		setCurrentTime(init);
+		setCurrentTime(isFocus ? focusTime : restTime);
 	}
 
 	const actions: OnKeyPressActions = useMemo(
@@ -55,8 +71,18 @@ export function Counter({
 	return (
 		<>
 			<CenteredBox>
-				<Box borderStyle="round" paddingRight={2} paddingLeft={2}>
-					<Text>🍅 {getPrintableTime(currentTime)}</Text>
+				<Box>
+					<Text>{isFocus ? 'Lock-in' : 'Chill'} </Text>
+				</Box>
+				<Box
+					borderStyle="round"
+					paddingRight={2}
+					paddingLeft={2}
+					borderColor={isFocus ? 'red' : 'greenBright'}
+				>
+					<Text color={isFocus ? 'red' : 'greenBright'}>
+						🍅 {getPrintableTime(currentTime)}
+					</Text>
 				</Box>
 			</CenteredBox>
 			{/* todo: there is probably a better way to do it, most likely in parent too */}
