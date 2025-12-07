@@ -1,5 +1,6 @@
 import {Box, Text, useInput} from 'ink';
 import React, {useContext, useState} from 'react';
+import {COLORS} from '../config/colors.js';
 import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
 
 function ActionsFooter() {
@@ -17,7 +18,10 @@ function ActionsFooter() {
 	return (
 		<Box height={1} borderTop justifyContent="center" gap={3}>
 			{Object.entries(actions).map(([key, [description]]) => (
-				<Text key={key} color={pressedKey === key ? 'blue' : undefined}>
+				<Text
+					key={key}
+					color={pressedKey === key ? COLORS.SELECTED : undefined}
+				>
 					[{key}]: {description}
 				</Text>
 			))}

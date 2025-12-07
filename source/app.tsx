@@ -4,6 +4,7 @@ import {ActionsFooter} from './components/ActionsFooter.js';
 import {Counter} from './components/Counter.js';
 import {Setup} from './components/Setup.js';
 import {CenteredBox} from './components/util/CenteredBox.js';
+import {COLORS} from './config/colors.js';
 import {
 	KeyPressActionContext,
 	KeyPressActionProvider,
@@ -13,13 +14,15 @@ import {clearScreen} from './util/terminal.js';
 
 function App() {
 	const app = useApp();
-	const {register, unregister} = useContext(KeyPressActionContext);
+	const {register, unregister, unregisterAll} = useContext(
+		KeyPressActionContext,
+	);
 
 	const [tab, setTab] = useState(1);
 	const [init, setInit] = useState<readonly [number, number]>([50, 10]);
 
 	function quit() {
-		clearScreen();
+		unregisterAll();
 		setTab(9);
 		setTimeout(() => {
 			app.exit();
@@ -76,11 +79,11 @@ function Tab({
 		if (input === tabInd.toString()) setTab(tabInd);
 	});
 
-	children = enabled ? `> ${tabInd}: ${children}` : children;
-
 	return (
 		<Box>
-			<Text>{children}</Text>
+			<Text color={enabled ? COLORS.SELECTED : undefined}>
+				{tabInd}: {children}
+			</Text>
 		</Box>
 	);
 }

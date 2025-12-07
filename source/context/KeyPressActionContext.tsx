@@ -5,12 +5,14 @@ type Context = {
 	actions: OnKeyPressActions;
 	register: (key: string, description: string, fn: () => void) => void;
 	unregister: (key: string) => void;
+	unregisterAll: () => void;
 };
 
 const KeyPressActionContext = createContext<Context>({
 	actions: {},
 	register: () => {},
 	unregister: () => {},
+	unregisterAll: () => {},
 });
 
 function KeyPressActionProvider({children}: {children: React.ReactNode}) {
@@ -31,8 +33,14 @@ function KeyPressActionProvider({children}: {children: React.ReactNode}) {
 		});
 	}, []);
 
+	const unregisterAll = useCallback(() => {
+		setActions({});
+	}, []);
+
 	return (
-		<KeyPressActionContext.Provider value={{actions, register, unregister}}>
+		<KeyPressActionContext.Provider
+			value={{actions, register, unregister, unregisterAll}}
+		>
 			{children}
 		</KeyPressActionContext.Provider>
 	);

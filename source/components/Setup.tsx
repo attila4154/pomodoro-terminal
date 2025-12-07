@@ -1,5 +1,6 @@
 import {Text, useInput} from 'ink';
 import React, {useState} from 'react';
+import {COLORS} from '../config/colors.js';
 
 const MIN_CHOICE = 1;
 const MAX_CHOICE = 2;
@@ -21,7 +22,7 @@ function Option({
 	const [min, sec] = CHOICE_MAP[choice];
 
 	return (
-		<Text bold={choice === currentChoice}>
+		<Text color={choice === currentChoice ? COLORS.SELECTED : undefined}>
 			{min}/{sec}
 		</Text>
 	);
