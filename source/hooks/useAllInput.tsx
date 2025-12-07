@@ -7,8 +7,8 @@ export function useAllInput() {
 
 	useInput(input => {
 		const action = actions[input];
-		if (!action) return;
+		if (!action || action[1]) return;
 
-		action[1]();
+		action[2]();
 	});
 }

@@ -17,10 +17,11 @@ function ActionsFooter() {
 
 	return (
 		<Box height={1} borderTop justifyContent="center" gap={3}>
-			{Object.entries(actions).map(([key, [description]]) => (
+			{Object.entries(actions).map(([key, [description, disabled]]) => (
 				<Text
 					key={key}
 					color={pressedKey === key ? COLORS.SELECTED : undefined}
+					dimColor={disabled}
 				>
 					[{key}]: {description}
 				</Text>
