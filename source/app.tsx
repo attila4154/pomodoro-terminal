@@ -1,4 +1,4 @@
-import {Box, Text, useApp} from 'ink';
+import {Box, Text, useApp, useInput} from 'ink';
 import React, {useContext, useEffect, useState} from 'react';
 import {ActionsFooter} from './components/ActionsFooter.js';
 import {Counter} from './components/Counter.js';
@@ -70,18 +70,13 @@ function Tab({
 	setTab: (t: number) => void;
 	children: string;
 }) {
-	const {register, unregister} = useContext(KeyPressActionContext);
 	const enabled = curTab === tabInd;
 
-	useEffect(() => {
-		register(String(tabInd), children, () => setTab(tabInd));
+	useInput(input => {
+		if (input === tabInd.toString()) setTab(tabInd);
+	});
 
-		return () => {
-			unregister(String(tabInd));
-		};
-	}, [register, unregister, setTab]);
-
-	children = enabled ? `> ${children}` : children;
+	children = enabled ? `> ${tabInd}: ${children}` : children;
 
 	return (
 		<Box>
