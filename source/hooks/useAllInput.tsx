@@ -6,9 +6,9 @@ export function useAllInput() {
 	const {actions} = useContext(KeyPressActionContext);
 
 	useInput(input => {
-		const action = actions[input];
-		if (!action || action[1]) return;
+		const action = actions.find(a => a.key === input);
+		if (!action || !action.enabled) return;
 
-		action[2]();
+		action.action();
 	});
 }

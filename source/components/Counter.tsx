@@ -50,10 +50,18 @@ export function Counter({init}: {init: readonly [number, number]}) {
 	}
 
 	useEffect(() => {
-		register(' ', isRunning ? 'pause' : 'start', false, () =>
-			setIsRunning(prev => !prev),
-		);
-		register('r', 'reset', isRunning, reset);
+		register({
+			key: ' ',
+			description: isRunning ? 'pause' : 'start',
+			enabled: true,
+			action: () => setIsRunning(prev => !prev),
+		});
+		register({
+			key: 'r',
+			description: 'reset',
+			enabled: !isRunning,
+			action: reset,
+		});
 
 		return () => {
 			unregister(' ');

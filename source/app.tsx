@@ -31,7 +31,7 @@ function App() {
 	}
 
 	useEffect(() => {
-		register('q', 'quit', false, quit);
+		register({key: 'q', description: 'quit', enabled: true, action: quit});
 
 		return () => {
 			unregister('q');

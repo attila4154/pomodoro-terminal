@@ -1,40 +1,44 @@
 import React, {createContext, useCallback, useState} from 'react';
-import {OnKeyPressActions} from '../util/terminal.js';
+
+export type OnKeyPressAction = {
+	key: string;
+	enabled: boolean;
+	description: string;
+	action: () => void;
+};
 
 type Context = {
-	actions: OnKeyPressActions;
-	register: (key: string, description: string, disabled: boolean, fn: () => void) => void;
+	actions: OnKeyPressAction[];
+	register: (action: OnKeyPressAction) => void;
 	unregister: (key: string) => void;
 	unregisterAll: () => void;
 };
 
 const KeyPressActionContext = createContext<Context>({
-	actions: {},
+	actions: [],
 	register: () => {},
 	unregister: () => {},
 	unregisterAll: () => {},
 });
 
 function KeyPressActionProvider({children}: {children: React.ReactNode}) {
-	const [actions, setActions] = useState<OnKeyPressActions>({});
+	const [actions, setActions] = useState<OnKeyPressAction[]>([]);
 
 	const register = useCallback(
-		(key: string, description: string, disabled: boolean, fn: () => void) => {
-			setActions(prev => ({...prev, [key]: [description, disabled, fn]}));
+		(action: OnKeyPressAction) => {
+			setActions(prev => [...prev, action]);
 		},
 		[setActions],
 	);
 
 	const unregister = useCallback((key: string) => {
 		setActions(prev => {
-			const next = {...prev};
-			delete next[key];
-			return next;
+			return prev.filter(p => p.key !== key);
 		});
 	}, []);
 
 	const unregisterAll = useCallback(() => {
-		setActions({});
+		setActions([]);
 	}, []);
 
 	return (

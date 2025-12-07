@@ -8,7 +8,8 @@ function ActionsFooter() {
 	const [pressedKey, setPressedKey] = useState<string | null>(null);
 
 	useInput(input => {
-		const actionExists = actions[input] !== undefined;
+		const actionExists = actions.find(a => a.key === input) !== undefined;
+
 		if (actionExists) {
 			setPressedKey(input);
 			setTimeout(() => setPressedKey(null), 150);
@@ -17,13 +18,14 @@ function ActionsFooter() {
 
 	return (
 		<Box height={1} borderTop justifyContent="center" gap={3}>
-			{Object.entries(actions).map(([key, [description, disabled]]) => (
+			{actions.map(action => (
 				<Text
-					key={key}
-					color={pressedKey === key ? COLORS.SELECTED : undefined}
-					dimColor={disabled}
+					key={action.key}
+					color={pressedKey === action.key ? COLORS.SELECTED : undefined}
+					bold={action.enabled}
+					dimColor={!action.enabled}
 				>
-					[{key}]: {description}
+					[{action.key}]: {action.description}
 				</Text>
 			))}
 		</Box>

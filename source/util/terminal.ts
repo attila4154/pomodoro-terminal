@@ -1,7 +1,5 @@
 import notifier from 'node-notifier';
 
-export type OnKeyPressActions = Record<string, [string, boolean, () => void]>;
-
 export function notify(msg: string) {
 	process.stdout.write('\x07'); // ASCII bell
 	notifier.notify({
