@@ -10,18 +10,14 @@ function ActionsFooter() {
 		const actionExists = actions[input] !== undefined;
 		if (actionExists) {
 			setPressedKey(input);
-			setTimeout(() => setPressedKey(null), 300);
+			setTimeout(() => setPressedKey(null), 150);
 		}
 	});
 
 	return (
 		<Box height={1} borderTop justifyContent="center" gap={3}>
 			{Object.entries(actions).map(([key, [description]]) => (
-				<Text
-					key={key}
-					dimColor={pressedKey === key}
-					color={pressedKey === key ? 'blue' : undefined}
-				>
+				<Text key={key} color={pressedKey === key ? 'blue' : undefined}>
 					[{key}]: {description}
 				</Text>
 			))}

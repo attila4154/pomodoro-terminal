@@ -1,4 +1,4 @@
-import {Text, useApp} from 'ink';
+import {Box, Text, useApp} from 'ink';
 import React, {useContext, useEffect, useState} from 'react';
 import {ActionsFooter} from './components/ActionsFooter.js';
 import {Counter} from './components/Counter.js';
@@ -15,13 +15,12 @@ function App() {
 	const app = useApp();
 	const {register, unregister} = useContext(KeyPressActionContext);
 
-	const [view, setView] = useState('setup');
-	// todo: rename init for more readability
-	const [init, setInit] = useState<[number, number]>([0, 0]);
+	const [tab, setTab] = useState(1);
+	const [init, setInit] = useState<readonly [number, number]>([50, 10]);
 
 	function quit() {
 		clearScreen();
-		setView('over');
+		setTab(9);
 		setTimeout(() => {
 			app.exit();
 			clearScreen();
@@ -38,23 +37,82 @@ function App() {
 
 	useAllInput();
 
-	if (view === 'setup') {
-		return (
-			<Setup
-				setInit={n => {
-					setView('counter');
-					return setInit(n);
-				}}
-			/>
-		);
-	}
-	if (view === 'counter') {
-		return <Counter init={init} />;
-	}
-	if (view === 'over') {
-		return <Text>Bye!</Text>;
-	}
-	return null;
+	return (
+		<>
+			<Box flexDirection="column">
+				<Tabs tab={tab} setTab={setTab} />
+				<CenteredBox>
+					{tab === 1 && <Counter init={init} />}
+					{tab === 2 && (
+						<Setup
+							setInit={n => {
+								setInit(n);
+								setTab(1);
+							}}
+						/>
+					)}
+					{tab === 9 && <Text>Bye!</Text>}
+				</CenteredBox>
+				<ActionsFooter />
+			</Box>
+		</>
+	);
+}
+
+function Tab({
+	curTab,
+	tabInd,
+	setTab,
+	children,
+}: {
+	curTab: number;
+	tabInd: number;
+	setTab: (t: number) => void;
+	children: string;
+}) {
+	const {register, unregister} = useContext(KeyPressActionContext);
+	const enabled = curTab === tabInd;
+
+	useEffect(() => {
+		register(String(tabInd), children, () => setTab(tabInd));
+
+		return () => {
+			unregister(String(tabInd));
+		};
+	}, [register, unregister, setTab]);
+
+	children = enabled ? `> ${children}` : children;
+
+	return (
+		<Box>
+			<Text>{children}</Text>
+		</Box>
+	);
+}
+
+function Tabs({tab, setTab}: {tab: number; setTab: (n: number) => void}) {
+	return (
+		<Box
+			flexDirection="row"
+			justifyContent="flex-start"
+			gap={3}
+			paddingLeft={2}
+			borderStyle={'single'}
+			borderTop={false}
+			borderLeft={false}
+			borderRight={false}
+		>
+			<Tab tabInd={1} curTab={tab} setTab={setTab}>
+				Timer
+			</Tab>
+			<Tab tabInd={2} curTab={tab} setTab={setTab}>
+				Config
+			</Tab>
+			<Tab tabInd={3} curTab={tab} setTab={setTab}>
+				Something
+			</Tab>
+		</Box>
+	);
 }
 
 clearScreen();
@@ -63,10 +121,7 @@ clearScreen();
 export default function () {
 	return (
 		<KeyPressActionProvider>
-			<CenteredBox>
-				<App />
-			</CenteredBox>
-			<ActionsFooter />
+			<App />
 		</KeyPressActionProvider>
 	);
 }

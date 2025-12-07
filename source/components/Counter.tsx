@@ -12,7 +12,9 @@ function getPrintableTime(time: number) {
 		.padStart(2, '0')}`;
 }
 
-export function Counter({init}: {init: [number, number]}) {
+export function Counter({init}: {init: readonly [number, number]}) {
+	init = [init[0] * 60, init[1] * 60];
+
 	const {register, unregister} = useContext(KeyPressActionContext);
 	const [focusTime, restTime] = init;
 	const [currentTime, setCurrentTime] = useState(focusTime);
@@ -30,7 +32,7 @@ export function Counter({init}: {init: [number, number]}) {
 					// 2. print something
 					// 3. switch times
 					setIsFocus(prev => !prev);
-					reset();
+					reset(!isFocus);
 					// 4. session counter or something
 					// 5. add to history
 				}
@@ -42,9 +44,9 @@ export function Counter({init}: {init: [number, number]}) {
 	}, [isRunning, isFocus, currentTime]);
 
 	// todo: add are you sure popup
-	function reset() {
+	function reset(_isFocus = isFocus) {
 		setIsRunning(false);
-		setCurrentTime(isFocus ? focusTime : restTime);
+		setCurrentTime(_isFocus ? focusTime : restTime);
 	}
 
 	useEffect(() => {

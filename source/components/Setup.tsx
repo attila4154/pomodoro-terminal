@@ -1,24 +1,58 @@
 import {Text, useInput} from 'ink';
-import React from 'react';
+import React, {useState} from 'react';
+
+const MIN_CHOICE = 1;
+const MAX_CHOICE = 2;
+
+const CHOICE_MAP = {
+	1: [25, 5],
+	2: [50, 10],
+} as const;
+
+type Choice = keyof typeof CHOICE_MAP;
+
+function Option({
+	choice,
+	currentChoice,
+}: {
+	choice: Choice;
+	currentChoice: Choice;
+}) {
+	const [min, sec] = CHOICE_MAP[choice];
+
+	return (
+		<Text bold={choice === currentChoice}>
+			{min}/{sec}
+		</Text>
+	);
+}
 
 // todo: add custom times
 export function Setup({
 	setInit,
 }: {
-	setInit: React.Dispatch<React.SetStateAction<[number, number]>>;
+	setInit: React.Dispatch<React.SetStateAction<readonly [number, number]>>;
 }) {
-	useInput(input => {
-		if (input === '1') {
-			setInit([25 * 60, 5 * 60]);
-		} else if (input === '2') {
-			setInit([50 * 60, 10 * 60]);
-		} else if (input === '3') {
-			setInit([10, 10]);
+	const [choice, setChoice] = useState<keyof typeof CHOICE_MAP>(MIN_CHOICE);
+
+	useInput((_, key) => {
+		if (key.downArrow) {
+			setChoice(prev => (prev >= MAX_CHOICE ? MIN_CHOICE : prev + 1) as Choice);
+		}
+
+		if (key.upArrow) {
+			setChoice(prev => (prev <= MIN_CHOICE ? MAX_CHOICE : prev - 1) as Choice);
+		}
+
+		if (key.return) {
+			setInit(CHOICE_MAP[choice]);
 		}
 	});
 	return (
 		<Text>
-			Select timer:{'\n'}1. 25/5{'\n'}2. 50/10
+			Select timer:
+			{'\n'}1. <Option choice={1} currentChoice={choice} />
+			{'\n'}2. <Option choice={2} currentChoice={choice} />
 		</Text>
 	);
 }
