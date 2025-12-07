@@ -8,3 +8,5 @@
 - [ ] feat:finish sound
 - [ ] feat:background noises
 - [ ] feat:history tab, global + one day
+- [ ] feat: rerender on resize
+- [ ] feat: config, pause/unpause (mode) the music on pause/unpause of timer
