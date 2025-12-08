@@ -1,8 +1,6 @@
 import {Box, Text} from 'ink';
 import React, {useContext, useEffect, useState} from 'react';
-import {FEATURES} from '../config/setup.js';
 import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
-import {toggleMusic} from '../util/keyboard.js';
 import {notify} from '../util/terminal.js';
 
 function getPrintableTime(time: number) {
@@ -58,20 +56,12 @@ export function Counter({init}: {init: readonly [number, number]}) {
 		setCurrentTime(isFocus ? restTime : focusTime);
 	}
 
-	function toggleCounter() {
-		if (FEATURES.MUSIC_TOGGLE_ENABLED) {
-			toggleMusic();
-		}
-
-		setIsRunning(prev => !prev);
-	}
-
 	useEffect(() => {
 		register({
 			key: ' ',
 			description: isRunning ? 'pause' : 'start',
 			enabled: true,
-			action: toggleCounter,
+			action: () => setIsRunning(prev => !prev),
 		});
 		register({
 			key: 'r',
