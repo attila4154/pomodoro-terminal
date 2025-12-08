@@ -11,6 +11,5 @@
 - [ ] feat: rerender on resize
 - [ ] feat: config, pause/unpause (mode) the music on pause/unpause of timer
 - [ ] feat: add slack integration (add focus status when timer is running)
-- [ ] cleanup dependencies
 - [ ] fix installation on the new machine (related to robotjs)
 - [ ] feat: add pomodoro icon to the notification
