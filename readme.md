@@ -13,3 +13,4 @@
 - [ ] feat: add slack integration (add focus status when timer is running)
 - [ ] cleanup dependencies
 - [ ] fix installation on the new machine (related to robotjs)
+- [ ] feat: add pomodoro icon to the notification
