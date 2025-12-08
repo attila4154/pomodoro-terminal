@@ -21,9 +21,13 @@ function ActionsFooter() {
 			{actions.map(action => (
 				<Text
 					key={action.key}
-					color={pressedKey === action.key ? COLORS.SELECTED : undefined}
-					bold={action.enabled}
-					dimColor={!action.enabled}
+					color={
+						!action.enabled
+							? COLORS.DISABLED
+							: pressedKey === action.key
+							? COLORS.SELECTED
+							: undefined
+					}
 				>
 					[{action.key}]: {action.description}
 				</Text>
