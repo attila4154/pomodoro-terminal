@@ -51,6 +51,13 @@ export function Counter({init}: {init: readonly [number, number]}) {
 		setCurrentTime(_isFocus ? focusTime : restTime);
 	}
 
+	function toggleMode() {
+		if (isRunning) return;
+
+		setIsFocus(prev => !prev);
+		setCurrentTime(isFocus ? restTime : focusTime);
+	}
+
 	function toggleCounter() {
 		if (FEATURES.MUSIC_TOGGLE_ENABLED) {
 			toggleMusic();
@@ -72,12 +79,19 @@ export function Counter({init}: {init: readonly [number, number]}) {
 			enabled: !isRunning,
 			action: reset,
 		});
+		register({
+			key: 't',
+			description: 'toggle mode',
+			enabled: !isRunning,
+			action: toggleMode,
+		});
 
 		return () => {
 			unregister(' ');
 			unregister('r');
+			unregister('t');
 		};
-	}, [register, setIsRunning, isRunning]);
+	}, [register, setIsRunning, isRunning, isFocus]);
 
 	return (
 		<>
