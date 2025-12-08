@@ -36,12 +36,13 @@ export function Setup({
 }) {
 	const [choice, setChoice] = useState<keyof typeof CHOICE_MAP>(MIN_CHOICE);
 
-	useInput((_, key) => {
-		if (key.downArrow) {
+	// todo: move to all actions?
+	useInput((input, key) => {
+		if (key.downArrow || input === 'j' || (input === 'n' && key.ctrl)) {
 			setChoice(prev => (prev >= MAX_CHOICE ? MIN_CHOICE : prev + 1) as Choice);
 		}
 
-		if (key.upArrow) {
+		if (key.upArrow || input === 'k' || (input === 'p' && key.ctrl)) {
 			setChoice(prev => (prev <= MIN_CHOICE ? MAX_CHOICE : prev - 1) as Choice);
 		}
 
