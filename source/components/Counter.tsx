@@ -69,24 +69,28 @@ export function Counter({init}: {init: readonly [number, number]}) {
 			key: ' ',
 			description: isRunning ? 'pause' : 'start',
 			enabled: true,
+			order: 1,
 			action: () => setIsRunning(prev => !prev),
 		});
 		register({
 			key: 'r',
 			description: 'reset',
 			enabled: !isRunning,
+			order: 2,
 			action: reset,
 		});
 		register({
 			key: 'm',
 			description: 'toggle mode',
 			enabled: !isRunning,
+			order: 3,
 			action: toggleMode,
 		});
 		register({
 			key: 't',
 			description: 'add task',
 			enabled: true,
+			order: 4,
 			action: () => setShowTaskInput(true),
 		});
 		if (task) {
@@ -94,6 +98,7 @@ export function Counter({init}: {init: readonly [number, number]}) {
 				key: 'e',
 				description: 'remove task',
 				enabled: true,
+				order: 5,
 				action: () => setTask(null),
 			});
 		}

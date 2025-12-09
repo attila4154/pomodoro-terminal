@@ -4,6 +4,7 @@ export type OnKeyPressAction = {
 	key: string;
 	enabled: boolean;
 	visible?: boolean;
+	order: number;
 	description: string;
 	action: () => void;
 };

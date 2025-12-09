@@ -6,6 +6,7 @@ import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
 function ActionsFooter() {
 	let {actions} = useContext(KeyPressActionContext);
 	actions = actions.filter(a => a.visible !== false);
+	actions = actions.toSorted((a, b) => a.order - b.order);
 
 	const [pressedKey, setPressedKey] = useState<string | null>(null);
 
