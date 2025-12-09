@@ -3,6 +3,7 @@ import React, {createContext, useCallback, useState} from 'react';
 export type OnKeyPressAction = {
 	key: string;
 	enabled: boolean;
+	visible?: boolean;
 	description: string;
 	action: () => void;
 };
@@ -12,6 +13,8 @@ type Context = {
 	register: (action: OnKeyPressAction) => void;
 	unregister: (key: string) => void;
 	unregisterAll: () => void;
+	showAll: () => void;
+	hideAll: () => void;
 };
 
 const KeyPressActionContext = createContext<Context>({
@@ -19,6 +22,8 @@ const KeyPressActionContext = createContext<Context>({
 	register: () => {},
 	unregister: () => {},
 	unregisterAll: () => {},
+	showAll: () => {},
+	hideAll: () => {},
 });
 
 function KeyPressActionProvider({children}: {children: React.ReactNode}) {
@@ -41,9 +46,24 @@ function KeyPressActionProvider({children}: {children: React.ReactNode}) {
 		setActions([]);
 	}, []);
 
+	const hideAll = useCallback(() => {
+		setActions(prev => prev.map(a => ({...a, visible: false})));
+	}, []);
+
+	const showAll = useCallback(() => {
+		setActions(prev => prev.map(a => ({...a, visible: true})));
+	}, []);
+
 	return (
 		<KeyPressActionContext.Provider
-			value={{actions, register, unregister, unregisterAll}}
+			value={{
+				actions,
+				register,
+				unregister,
+				unregisterAll,
+				hideAll,
+				showAll,
+			}}
 		>
 			{children}
 		</KeyPressActionContext.Provider>

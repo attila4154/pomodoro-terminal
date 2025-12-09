@@ -2,6 +2,7 @@ import {Box, Text} from 'ink';
 import React, {useContext, useEffect, useState} from 'react';
 import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
 import {notify} from '../util/terminal.js';
+import {TaskInput} from './TaskInput.js';
 
 function getPrintableTime(time: number) {
 	const minutes = Math.floor(time / 60);
@@ -20,6 +21,8 @@ export function Counter({init}: {init: readonly [number, number]}) {
 	const [currentTime, setCurrentTime] = useState(focusTime);
 	const [isRunning, setIsRunning] = useState(false);
 	const [isFocus, setIsFocus] = useState(true);
+	const [showTaskInput, setShowTaskInput] = useState(false);
+	const [task, setTask] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (isRunning) {
@@ -57,6 +60,9 @@ export function Counter({init}: {init: readonly [number, number]}) {
 	}
 
 	useEffect(() => {
+		if (showTaskInput) {
+			return;
+		}
 		register({
 			key: ' ',
 			description: isRunning ? 'pause' : 'start',
@@ -70,18 +76,34 @@ export function Counter({init}: {init: readonly [number, number]}) {
 			action: reset,
 		});
 		register({
-			key: 't',
+			key: 'm',
 			description: 'toggle mode',
 			enabled: !isRunning,
 			action: toggleMode,
 		});
+		register({
+			key: 't',
+			description: 'add task',
+			enabled: true,
+			action: () => setShowTaskInput(true),
+		});
+		if (task) {
+			register({
+				key: 'e',
+				description: 'remove task',
+				enabled: true,
+				action: () => setTask(null),
+			});
+		}
 
 		return () => {
 			unregister(' ');
 			unregister('r');
+			unregister('m');
 			unregister('t');
+			unregister('e');
 		};
-	}, [register, setIsRunning, isRunning, isFocus]);
+	}, [register, setIsRunning, isRunning, isFocus, showTaskInput, task]);
 
 	return (
 		<>
@@ -98,6 +120,19 @@ export function Counter({init}: {init: readonly [number, number]}) {
 					🍅 {getPrintableTime(currentTime)}
 				</Text>
 			</Box>
+			{showTaskInput && (
+				<TaskInput
+					setTask={task => {
+						setTask(task);
+						setShowTaskInput(false);
+					}}
+				/>
+			)}
+			{!showTaskInput && task && (
+				<Box>
+					<Text>Working on {task}</Text>
+				</Box>
+			)}
 		</>
 	);
 }

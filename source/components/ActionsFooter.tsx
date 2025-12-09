@@ -4,7 +4,9 @@ import {COLORS} from '../config/colors.js';
 import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
 
 function ActionsFooter() {
-	const {actions} = useContext(KeyPressActionContext);
+	let {actions} = useContext(KeyPressActionContext);
+	actions = actions.filter(a => a.visible !== false);
+
 	const [pressedKey, setPressedKey] = useState<string | null>(null);
 
 	useInput(input => {
