@@ -32,7 +32,7 @@ export function TaskInput({setTask}: {setTask: (task: string | null) => void}) {
 	return (
 		<Box>
 			<Text color={taskInput ? undefined : COLORS.DISABLED}>
-				{taskInput || '> Enter your task...'}
+				{taskInput ? taskInput + '_' : '> Enter your task...'}
 			</Text>
 		</Box>
 	);
