@@ -1,5 +1,6 @@
 import {Box, Text} from 'ink';
 import React, {useContext, useEffect, useState} from 'react';
+import {COLORS} from '../config/colors.js';
 import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
 import {notify} from '../util/terminal.js';
 import {TaskInput} from './TaskInput.js';
@@ -15,9 +16,10 @@ function getPrintableTime(time: number) {
 
 export function Counter({init}: {init: readonly [number, number]}) {
 	init = [init[0] * 60, init[1] * 60];
+	const [focusTime, restTime] = init;
 
 	const {register, unregister} = useContext(KeyPressActionContext);
-	const [focusTime, restTime] = init;
+
 	const [currentTime, setCurrentTime] = useState(focusTime);
 	const [isRunning, setIsRunning] = useState(false);
 	const [isFocus, setIsFocus] = useState(true);
@@ -105,20 +107,27 @@ export function Counter({init}: {init: readonly [number, number]}) {
 		};
 	}, [register, setIsRunning, isRunning, isFocus, showTaskInput, task]);
 
+	let color = undefined;
+	if (isFocus) {
+		if (isRunning) color = COLORS.FOCUS_RUNNING;
+		else color = COLORS.FOCUS_NOT_RUNNING;
+	} else {
+		if (isRunning) color = COLORS.REST_NOT_RUNNING;
+		else color = COLORS.REST_RUNNING;
+	}
+
 	return (
 		<>
 			<Box>
-				<Text>{isFocus ? 'Lock-in' : 'Chill'} </Text>
+				<Text>{isFocus ? 'Lock-in' : 'Chill'}</Text>
 			</Box>
 			<Box
 				borderStyle="round"
 				paddingRight={2}
 				paddingLeft={2}
-				borderColor={isFocus ? 'red' : 'greenBright'}
+				borderColor={color}
 			>
-				<Text color={isFocus ? 'red' : 'greenBright'}>
-					🍅 {getPrintableTime(currentTime)}
-				</Text>
+				<Text color={color}>🍅 {getPrintableTime(currentTime)}</Text>
 			</Box>
 			{showTaskInput && (
 				<TaskInput

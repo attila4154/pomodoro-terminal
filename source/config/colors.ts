@@ -1,4 +1,8 @@
 export const COLORS = {
 	SELECTED: 'blue',
 	DISABLED: 'gray',
+	FOCUS_RUNNING: '#FF7A5A',
+	FOCUS_NOT_RUNNING: '#D9A4B0',
+	REST_RUNNING: '#8FD8C6',
+	REST_NOT_RUNNING: '#45C4A1',
 } as const;
