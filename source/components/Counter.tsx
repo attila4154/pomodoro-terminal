@@ -104,11 +104,11 @@ export function Counter({init}: {init: readonly [number, number]}) {
 		}
 
 		return () => {
-			unregister(' ');
-			unregister('r');
-			unregister('m');
-			unregister('t');
-			unregister('e');
+			unregister({key: ' '});
+			unregister({key: 'r'});
+			unregister({key: 'm'});
+			unregister({key: 't'});
+			unregister({key: 'e'});
 		};
 	}, [register, setIsRunning, isRunning, isFocus, showTaskInput, task]);
 

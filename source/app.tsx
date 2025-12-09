@@ -40,7 +40,7 @@ function App() {
 		});
 
 		return () => {
-			unregister('q');
+			unregister({description: 'quit'});
 		};
 	}, [register]);
 
