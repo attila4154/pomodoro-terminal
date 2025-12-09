@@ -70,7 +70,7 @@ export function useAllInput() {
 
 	useInput((input, key) => {
 		const action = findAction(actions, input, key);
-		if (!action || !action.enabled) return;
+		if (!action || !action.enabled || action.visible === false) return;
 
 		action.action();
 	});

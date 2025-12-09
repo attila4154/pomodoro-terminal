@@ -13,4 +13,4 @@
 - [ ] feat: add slack integration (add focus status when timer is running)
 - [ ] fix installation on the new machine (related to robotjs)
 - [ ] feat: add pomodoro icon to the notification
-- [ ] feat: add h action to hide/unhide the footer
+- [ ] feat: make app unscrollable

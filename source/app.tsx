@@ -20,6 +20,7 @@ function App() {
 
 	const [tab, setTab] = useState(1);
 	const [init, setInit] = useState<readonly [number, number]>([50, 10]);
+	const [showFooter, setShowFooter] = useState(true);
 
 	function quit() {
 		unregisterAll();
@@ -39,10 +40,19 @@ function App() {
 			action: quit,
 		});
 
+		register({
+			key: 'h',
+			description: 'hide help',
+			enabled: true,
+			order: 1000,
+			action: () => setShowFooter(prev => !prev),
+		});
+
 		return () => {
 			unregister({description: 'quit'});
+			unregister({key: 'h'});
 		};
-	}, [register]);
+	}, []);
 
 	useAllInput();
 
@@ -62,7 +72,7 @@ function App() {
 					)}
 					{tab === 9 && <Text>Bye!</Text>}
 				</CenteredBox>
-				<ActionsFooter />
+				{showFooter && <ActionsFooter />}
 			</Box>
 		</>
 	);
