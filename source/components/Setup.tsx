@@ -7,8 +7,8 @@ const MIN_CHOICE = 1;
 const MAX_CHOICE = 2;
 
 const CHOICE_MAP = {
-	1: [25, 5],
-	2: [50, 10],
+	1: [50, 10],
+	2: [25, 5],
 } as const;
 
 type Choice = keyof typeof CHOICE_MAP;
@@ -29,13 +29,24 @@ function Option({
 	);
 }
 
+function findTimerInd(timer: readonly [number, number]) {
+	const sth = Object.entries(CHOICE_MAP).find(
+		([_, t]) => t[0] === timer[0] && t[1],
+	);
+	return (Number(sth?.[0]) || MIN_CHOICE) as Choice;
+}
+
 export function Setup({
+	currentTimer,
 	setInit,
 }: {
+	currentTimer: readonly [number, number];
 	setInit: React.Dispatch<React.SetStateAction<readonly [number, number]>>;
 }) {
 	const {register, unregister} = useContext(KeyPressActionContext);
-	const [choice, setChoice] = useState<keyof typeof CHOICE_MAP>(MIN_CHOICE);
+	const [choice, setChoice] = useState<keyof typeof CHOICE_MAP>(
+		findTimerInd(currentTimer),
+	);
 
 	useEffect(() => {
 		register({

@@ -64,6 +64,7 @@ function App() {
 					{tab === 1 && <Counter init={init} />}
 					{tab === 2 && (
 						<Setup
+							currentTimer={init}
 							setInit={n => {
 								setInit(n);
 								setTab(1);
