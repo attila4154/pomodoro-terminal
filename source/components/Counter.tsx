@@ -2,7 +2,7 @@ import {Box, Text} from 'ink';
 import React, {useContext, useEffect, useState} from 'react';
 import {COLORS} from '../config/colors.js';
 import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
-import {notify} from '../util/terminal.js';
+import {notify, notifySound} from '../util/terminal.js';
 import {TaskInput} from './TaskInput.js';
 
 function getPrintableTime(time: number) {
@@ -34,6 +34,7 @@ export function Counter({init}: {init: readonly [number, number]}) {
 				} else {
 					// 1. notify
 					notify(isFocus ? 'Lock-in over!' : 'Time to cook');
+					notifySound();
 					// 2. print something
 					// 3. switch times
 					setIsFocus(prev => !prev);
