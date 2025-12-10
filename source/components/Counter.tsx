@@ -1,8 +1,14 @@
 import {Box, Text} from 'ink';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {COLORS} from '../config/colors.js';
+import {FEATURES} from '../config/features.js';
 import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
-import {notify, notifySound} from '../util/terminal.js';
+import {
+	notify,
+	notifySound,
+	runDisableFocusShortcut,
+	runEnableFocusShortcut,
+} from '../util/terminal.js';
 import {TaskInput} from './TaskInput.js';
 
 function getPrintableTime(time: number) {
@@ -12,6 +18,36 @@ function getPrintableTime(time: number) {
 	return `${minutes.toString().padStart(2, '0')}:${seconds
 		.toString()
 		.padStart(2, '0')}`;
+}
+
+function useFocusMode({
+	isRunning,
+	isFocus,
+}: {
+	isRunning: boolean;
+	isFocus: boolean;
+}) {
+	const isFocusModeRef = useRef(false);
+
+	useEffect(() => {
+		if (!FEATURES.FOCUS_MODE_TOGGLE) return;
+
+		const shouldBeFocusMode = isRunning && isFocus;
+
+		const timeout = setTimeout(async () => {
+			if (shouldBeFocusMode && !isFocusModeRef.current) {
+				if (await runEnableFocusShortcut()) {
+					isFocusModeRef.current = true;
+				}
+			} else if (!shouldBeFocusMode && isFocusModeRef.current) {
+				if (await runDisableFocusShortcut()) {
+					isFocusModeRef.current = false;
+				}
+			}
+		}, 0);
+
+		return () => clearTimeout(timeout);
+	}, [isRunning, isFocus]);
 }
 
 export function Counter({init}: {init: readonly [number, number]}) {
@@ -26,21 +62,21 @@ export function Counter({init}: {init: readonly [number, number]}) {
 	const [showTaskInput, setShowTaskInput] = useState(false);
 	const [task, setTask] = useState<string | null>(null);
 
+	useFocusMode({isFocus, isRunning});
+
 	useEffect(() => {
 		if (isRunning) {
 			const id = setInterval(() => {
-				if (currentTime > 0) {
-					setCurrentTime(prev => prev - 1);
-				} else {
-					// 1. notify
+				if (currentTime === 0) {
 					notify(isFocus ? 'Lock-in over!' : 'Time to cook');
 					notifySound();
-					// 2. print something
-					// 3. switch times
-					setIsFocus(prev => !prev);
-					reset(!isFocus);
-					// 4. session counter or something
-					// 5. add to history
+					setIsFocus(prev => {
+						setCurrentTime(prev ? restTime : focusTime);
+						return !prev;
+					});
+					setIsRunning(false);
+				} else {
+					setCurrentTime(prev => prev - 1);
 				}
 			}, 1000);
 			return () => clearInterval(id);

@@ -5,12 +5,13 @@ import {Counter} from './components/Counter.js';
 import {Setup} from './components/Setup.js';
 import {CenteredBox} from './components/util/CenteredBox.js';
 import {COLORS} from './config/colors.js';
+import {FEATURES} from './config/features.js';
 import {
 	KeyPressActionContext,
 	KeyPressActionProvider,
 } from './context/KeyPressActionContext.js';
 import {useAllInput} from './hooks/useAllInput.js';
-import {clearScreen} from './util/terminal.js';
+import {clearScreen, runDisableFocusShortcut} from './util/terminal.js';
 
 function App() {
 	const app = useApp();
@@ -25,6 +26,9 @@ function App() {
 	function quit() {
 		unregisterAll();
 		setTab(9);
+		if (FEATURES.FOCUS_MODE_TOGGLE) {
+			runDisableFocusShortcut();
+		}
 		setTimeout(() => {
 			app.exit();
 			clearScreen();
