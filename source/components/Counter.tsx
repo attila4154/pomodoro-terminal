@@ -67,7 +67,7 @@ export function Counter({init}: {init: readonly [number, number]}) {
 			return;
 		}
 		register({
-			key: ' ',
+			key: [' ', 'return'],
 			description: isRunning ? 'pause' : 'start',
 			enabled: true,
 			order: 1,
@@ -105,7 +105,7 @@ export function Counter({init}: {init: readonly [number, number]}) {
 		}
 
 		return () => {
-			unregister({key: ' '});
+			unregister({description: isRunning ? 'pause' : 'start'});
 			unregister({key: 'r'});
 			unregister({key: 'm'});
 			unregister({key: 't'});
