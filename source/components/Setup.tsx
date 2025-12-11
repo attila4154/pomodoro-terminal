@@ -1,4 +1,4 @@
-import {Text} from 'ink';
+import {Box, Text} from 'ink';
 import React, {useContext, useEffect, useState} from 'react';
 import {COLORS} from '../config/colors.js';
 import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
@@ -40,7 +40,9 @@ export function Setup({
 }) {
 	const {register, unregister} = useContext(KeyPressActionContext);
 	const [timers, setTimers] = useState(TIMERS);
-	const [choice, setChoice] = useState<number>(findTimerInd(currentTimer));
+	const [currentChoice, setChoice] = useState<number>(
+		findTimerInd(currentTimer),
+	);
 
 	const minChoice = 1;
 	const maxChoice = Object.entries(timers).length;
@@ -67,7 +69,7 @@ export function Setup({
 			description: 'select',
 			enabled: true,
 			order: 3,
-			action: () => setInit(timers[choice]!),
+			action: () => setInit(timers[currentChoice]!),
 		});
 
 		return () => {
@@ -75,15 +77,14 @@ export function Setup({
 			unregister({description: 'prev'});
 			unregister({description: 'select'});
 		};
-	}, [choice]);
+	}, [currentChoice]);
 
 	return (
-		<Text>
-			Timer:
-			{'\n'}
-			<Option choice={1} currentChoice={choice} />
-			{'\n'}
-			<Option choice={2} currentChoice={choice} />
-		</Text>
+		<Box flexDirection="column">
+			<Text>Timer:</Text>
+			{Object.entries(timers).map(([ind]) => (
+				<Option choice={+ind} currentChoice={currentChoice} />
+			))}
+		</Box>
 	);
 }
