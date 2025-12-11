@@ -3,24 +3,19 @@ import React, {useContext, useEffect, useState} from 'react';
 import {COLORS} from '../config/colors.js';
 import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
 
-const MIN_CHOICE = 1;
-const MAX_CHOICE = 2;
-
-const CHOICE_MAP = {
+const TIMERS = {
 	1: [50, 10],
 	2: [25, 5],
-} as const;
-
-type Choice = keyof typeof CHOICE_MAP;
+} as Record<number, [number, number]>;
 
 function Option({
 	choice,
 	currentChoice,
 }: {
-	choice: Choice;
-	currentChoice: Choice;
+	choice: number;
+	currentChoice: number;
 }) {
-	const [min, sec] = CHOICE_MAP[choice];
+	const [min, sec] = TIMERS[choice]!;
 
 	return (
 		<Text color={choice === currentChoice ? COLORS.SELECTED : undefined}>
@@ -29,24 +24,26 @@ function Option({
 	);
 }
 
-function findTimerInd(timer: readonly [number, number]) {
-	const sth = Object.entries(CHOICE_MAP).find(
+function findTimerInd(timer: [number, number]) {
+	const sth = Object.entries(TIMERS).find(
 		([_, t]) => t[0] === timer[0] && t[1],
 	);
-	return (Number(sth?.[0]) || MIN_CHOICE) as Choice;
+	return Number(sth?.[0]) || 1;
 }
 
 export function Setup({
 	currentTimer,
 	setInit,
 }: {
-	currentTimer: readonly [number, number];
-	setInit: React.Dispatch<React.SetStateAction<readonly [number, number]>>;
+	currentTimer: [number, number];
+	setInit: React.Dispatch<React.SetStateAction<[number, number]>>;
 }) {
 	const {register, unregister} = useContext(KeyPressActionContext);
-	const [choice, setChoice] = useState<keyof typeof CHOICE_MAP>(
-		findTimerInd(currentTimer),
-	);
+	const [timers, setTimers] = useState(TIMERS);
+	const [choice, setChoice] = useState<number>(findTimerInd(currentTimer));
+
+	const minChoice = 1;
+	const maxChoice = Object.entries(timers).length;
 
 	useEffect(() => {
 		register({
@@ -55,9 +52,7 @@ export function Setup({
 			enabled: true,
 			order: 1,
 			action: () =>
-				setChoice(
-					prev => (prev >= MAX_CHOICE ? MIN_CHOICE : prev + 1) as Choice,
-				),
+				setChoice(prev => (prev >= minChoice ? maxChoice : prev + 1)),
 		});
 		register({
 			key: ['upArrow', 'k', ['ctrl', 'p']],
@@ -65,18 +60,14 @@ export function Setup({
 			enabled: true,
 			order: 2,
 			action: () =>
-				setChoice(
-					prev => (prev <= MIN_CHOICE ? MAX_CHOICE : prev - 1) as Choice,
-				),
+				setChoice(prev => (prev <= minChoice ? maxChoice : prev - 1)),
 		});
 		register({
 			key: 'return',
 			description: 'select',
 			enabled: true,
 			order: 3,
-			action: () => {
-				return setInit(CHOICE_MAP[choice]);
-			},
+			action: () => setInit(timers[choice]!),
 		});
 
 		return () => {
@@ -88,7 +79,7 @@ export function Setup({
 
 	return (
 		<Text>
-			Select timer:
+			Timer:
 			{'\n'}
 			<Option choice={1} currentChoice={choice} />
 			{'\n'}
