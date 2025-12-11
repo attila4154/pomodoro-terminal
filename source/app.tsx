@@ -2,7 +2,7 @@ import {Box, Text, useApp, useInput} from 'ink';
 import React, {useContext, useEffect, useState} from 'react';
 import {ActionsFooter} from './components/ActionsFooter.js';
 import {Counter} from './components/Counter.js';
-import {Setup, Timers} from './components/Setup.js';
+import {Setup, Timer} from './components/Setup.js';
 import {CenteredBox} from './components/util/CenteredBox.js';
 import {COLORS} from './config/colors.js';
 import {FEATURES} from './config/features.js';
@@ -13,11 +13,6 @@ import {
 import {useAllInput} from './hooks/useAllInput.js';
 import {clearScreen, runDisableFocusShortcut} from './util/terminal.js';
 
-const TIMERS = {
-	1: [50, 10],
-	2: [25, 5],
-} as Timers;
-
 function App() {
 	const app = useApp();
 	const {register, unregister, unregisterAll} = useContext(
@@ -25,8 +20,11 @@ function App() {
 	);
 
 	const [tab, setTab] = useState(1);
-	const [init, setInit] = useState<[number, number]>([50, 10]);
-	const [timers, setTimers] = useState(TIMERS);
+	const [timer, setTimer] = useState<Timer>([50, 10]);
+	const [timers, setTimers] = useState<Timer[]>([
+		[50, 10],
+		[25, 5],
+	]);
 	const [showFooter, setShowFooter] = useState(true);
 
 	function quit() {
@@ -71,14 +69,14 @@ function App() {
 			<Box flexDirection="column">
 				<Tabs tab={tab} setTab={setTab} />
 				<CenteredBox>
-					{tab === 1 && <Counter init={init} />}
+					{tab === 1 && <Counter init={timer} />}
 					{tab === 2 && (
 						<Setup
-							currentTimer={init}
+							timer={timer}
 							timers={timers}
 							setTimers={setTimers}
-							setInit={n => {
-								setInit(n);
+							setTimer={n => {
+								setTimer(n);
 								setTab(1);
 							}}
 						/>

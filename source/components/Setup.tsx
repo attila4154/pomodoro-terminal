@@ -20,7 +20,7 @@ function Option({
 }: {
 	choice: number;
 	selected: boolean;
-	timer: [number, number];
+	timer: Timer;
 	onSelect: () => void;
 }) {
 	const {register, unregister} = useContext(KeyPressActionContext);
@@ -42,38 +42,31 @@ function Option({
 
 	return (
 		<Text color={selected ? COLORS.SELECTED : undefined}>
-			{choice}. {min}/{sec}
+			{choice + 1}. {min}/{sec}
 		</Text>
 	);
 }
 
-function findTimerInd(timer: [number, number], timers: Timers) {
-	const sth = Object.entries(timers).find(
-		([_, t]) => t[0] === timer[0] && t[1],
-	);
-	return Number(sth?.[0]) || 1;
-}
-
-export type Timers = Record<number, [number, number]>;
+export type Timer = [number, number];
 
 export function Setup({
 	timers,
 	setTimers,
-	currentTimer,
-	setInit,
+	timer,
+	setTimer,
 }: {
-	timers: Timers;
-	setTimers: Dispatch<SetStateAction<Timers>>;
-	currentTimer: [number, number];
-	setInit: Dispatch<SetStateAction<[number, number]>>;
+	timers: Timer[];
+	setTimers: Dispatch<SetStateAction<Timer[]>>;
+	timer: Timer;
+	setTimer: Dispatch<SetStateAction<Timer>>;
 }) {
 	const {register, unregister} = useContext(KeyPressActionContext);
-	const [currentChoice, setChoice] = useState<number>(
-		findTimerInd(currentTimer, timers),
+	const [currentChoice, setChoice] = useState(() =>
+		timers.findIndex(t => t[0] === timer[0] && t[1] === timer[1]),
 	);
 
-	const minChoice = 1;
-	const maxChoice = Object.entries(timers).length + 1;
+	const minChoice = 0;
+	const maxChoice = timers.length;
 
 	useEffect(() => {
 		register({
@@ -102,18 +95,18 @@ export function Setup({
 	return (
 		<Box flexDirection="column">
 			<Text>Timer:</Text>
-			{Object.entries(timers).map(([ind, timer]) => (
+			{timers.map((t, ind) => (
 				<Option
-					choice={+ind}
-					selected={currentChoice === +ind}
-					timer={timer}
-					onSelect={() => setInit(timers[+ind]!)}
+					choice={ind}
+					selected={currentChoice === ind}
+					timer={t}
+					onSelect={() => setTimer(timers[ind]!)}
 				/>
 			))}
 			<CustomTimerInput
 				choice={maxChoice}
 				selected={currentChoice === maxChoice}
-				onSubmit={timer => setTimers(prev => ({...prev, [maxChoice]: timer}))}
+				onSubmit={timer => setTimers(prev => [...prev, timer])}
 			/>
 		</Box>
 	);
@@ -125,7 +118,7 @@ function CustomTimerInput({
 	selected,
 }: {
 	choice: number;
-	onSubmit: (timer: [number, number]) => void;
+	onSubmit: (timer: Timer) => void;
 	selected: boolean;
 }) {
 	const {register, unregister} = useContext(KeyPressActionContext);
@@ -140,7 +133,7 @@ function CustomTimerInput({
 				key: 'return',
 				description: 'enter',
 				enabled: true,
-				order: 100,
+				order: 3,
 				action: () => setIsTyping(true),
 			});
 		}
@@ -166,23 +159,43 @@ function CustomTimerInput({
 				setUserInput('');
 			}
 
-			if (input) {
+			if (input === '/' || isStringNumber(input)) {
 				setUserInput(prev => prev + input);
 			}
 		}
 	});
 
-	if (!selected) {
-		return <Text>{choice}. Custom Timer</Text>;
-	}
+	const prefix = (
+		<Text color={selected ? COLORS.SELECTED : undefined}>{choice + 1}. </Text>
+	);
 
-	if (!isTyping) {
-		return <Text color={'gray'}>mm/mm</Text>;
-	}
+	const content = () => {
+		if (!selected || !isTyping) {
+			return (
+				<Text color={selected ? COLORS.SELECTED : undefined}>Custom Timer</Text>
+			);
+		}
+		if (userInput === '') {
+			// prettier-ignore
+			return <Text color={'gray'}>ff/rr</Text>;
+		}
 
-	return <Text>{userInput}|</Text>;
+		return <Text>{userInput}|</Text>;
+	};
+
+	return (
+		<Text>
+			{prefix}
+			{content()}
+		</Text>
+	);
 }
 
 function getTimerFromInput(input: string) {
 	return input.split('/').map(s => +s) as [number, number];
+}
+
+function isStringNumber(value: string): boolean {
+	// Using Number constructor to attempt conversion
+	return !isNaN(Number(value)) && value.trim() !== '';
 }
