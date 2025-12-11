@@ -1,4 +1,10 @@
-import React, {createContext, useCallback, useState} from 'react';
+import React, {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from 'react';
 
 export const KEYS = [
 	'upArrow',
@@ -49,6 +55,7 @@ export type OnKeyPressAction = {
 
 type Context = {
 	actions: OnKeyPressAction[];
+	isTyping: boolean;
 	register: (action: OnKeyPressAction) => void;
 	unregister: ({
 		description,
@@ -60,19 +67,41 @@ type Context = {
 	unregisterAll: () => void;
 	showAll: () => void;
 	hideAll: () => void;
+	setIsTyping: (t: boolean) => void;
 };
 
 const KeyPressActionContext = createContext<Context>({
 	actions: [],
+	isTyping: false,
 	register: () => {},
 	unregister: () => {},
 	unregisterAll: () => {},
 	showAll: () => {},
 	hideAll: () => {},
+	setIsTyping: () => {},
 });
+
+export function useIsTyping(enabled: boolean) {
+	const {showAll, hideAll, setIsTyping} = useContext(KeyPressActionContext);
+
+	useEffect(() => {
+		if (enabled) {
+			hideAll();
+			setIsTyping(true);
+		}
+
+		return enabled
+			? () => {
+					showAll();
+					setIsTyping(false);
+			  }
+			: () => {};
+	}, [enabled]);
+}
 
 function KeyPressActionProvider({children}: {children: React.ReactNode}) {
 	const [actions, setActions] = useState<OnKeyPressAction[]>([]);
+	const [isTyping, setTyping] = useState(false);
 
 	const register = useCallback(
 		(action: OnKeyPressAction) => {
@@ -108,15 +137,21 @@ function KeyPressActionProvider({children}: {children: React.ReactNode}) {
 		setActions(prev => prev.map(a => ({...a, visible: true})));
 	}, []);
 
+	const setIsTyping = useCallback((t: boolean) => {
+		setTyping(t);
+	}, []);
+
 	return (
 		<KeyPressActionContext.Provider
 			value={{
 				actions,
+				isTyping,
 				register,
 				unregister,
 				unregisterAll,
 				hideAll,
 				showAll,
+				setIsTyping,
 			}}
 		>
 			{children}

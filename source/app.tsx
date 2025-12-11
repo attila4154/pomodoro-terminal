@@ -2,7 +2,7 @@ import {Box, Text, useApp, useInput} from 'ink';
 import React, {useContext, useEffect, useState} from 'react';
 import {ActionsFooter} from './components/ActionsFooter.js';
 import {Counter} from './components/Counter.js';
-import {Setup} from './components/Setup.js';
+import {Setup, Timers} from './components/Setup.js';
 import {CenteredBox} from './components/util/CenteredBox.js';
 import {COLORS} from './config/colors.js';
 import {FEATURES} from './config/features.js';
@@ -13,6 +13,11 @@ import {
 import {useAllInput} from './hooks/useAllInput.js';
 import {clearScreen, runDisableFocusShortcut} from './util/terminal.js';
 
+const TIMERS = {
+	1: [50, 10],
+	2: [25, 5],
+} as Timers;
+
 function App() {
 	const app = useApp();
 	const {register, unregister, unregisterAll} = useContext(
@@ -20,7 +25,8 @@ function App() {
 	);
 
 	const [tab, setTab] = useState(1);
-	const [init, setInit] = useState<readonly [number, number]>([50, 10]);
+	const [init, setInit] = useState<[number, number]>([50, 10]);
+	const [timers, setTimers] = useState(TIMERS);
 	const [showFooter, setShowFooter] = useState(true);
 
 	function quit() {
@@ -69,6 +75,8 @@ function App() {
 					{tab === 2 && (
 						<Setup
 							currentTimer={init}
+							timers={timers}
+							setTimers={setTimers}
 							setInit={n => {
 								setInit(n);
 								setTab(1);
@@ -94,11 +102,15 @@ function Tab({
 	setTab: (t: number) => void;
 	children: string;
 }) {
+	const {isTyping} = useContext(KeyPressActionContext);
 	const enabled = curTab === tabInd;
 
-	useInput(input => {
-		if (input === tabInd.toString()) setTab(tabInd);
-	});
+	useInput(
+		input => {
+			if (input === tabInd.toString()) setTab(tabInd);
+		},
+		{isActive: !isTyping},
+	);
 
 	return (
 		<Box>
