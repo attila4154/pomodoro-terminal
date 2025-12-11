@@ -10,15 +10,34 @@ const TIMERS = {
 
 function Option({
 	choice,
-	currentChoice,
+	selected,
+	timer,
+	onSelect,
 }: {
 	choice: number;
-	currentChoice: number;
+	selected: boolean;
+	timer: [number, number];
+	onSelect: () => void;
 }) {
-	const [min, sec] = TIMERS[choice]!;
+	const {register, unregister} = useContext(KeyPressActionContext);
+	const [min, sec] = timer;
+
+	useEffect(() => {
+		if (selected) {
+			register({
+				key: 'return',
+				description: 'select',
+				enabled: true,
+				order: 3,
+				action: onSelect,
+			});
+		}
+
+		return selected ? () => unregister({description: 'select'}) : () => {};
+	}, [selected]);
 
 	return (
-		<Text color={choice === currentChoice ? COLORS.SELECTED : undefined}>
+		<Text color={selected ? COLORS.SELECTED : undefined}>
 			{choice}. {min}/{sec}
 		</Text>
 	);
@@ -64,26 +83,23 @@ export function Setup({
 			action: () =>
 				setChoice(prev => (prev <= minChoice ? maxChoice : prev - 1)),
 		});
-		register({
-			key: 'return',
-			description: 'select',
-			enabled: true,
-			order: 3,
-			action: () => setInit(timers[currentChoice]!),
-		});
 
 		return () => {
 			unregister({description: 'next'});
 			unregister({description: 'prev'});
-			unregister({description: 'select'});
 		};
-	}, [currentChoice]);
+	}, []);
 
 	return (
 		<Box flexDirection="column">
 			<Text>Timer:</Text>
-			{Object.entries(timers).map(([ind]) => (
-				<Option choice={+ind} currentChoice={currentChoice} />
+			{Object.entries(timers).map(([ind, timer]) => (
+				<Option
+					choice={+ind}
+					selected={currentChoice === +ind}
+					timer={timer}
+					onSelect={() => setInit(timers[+ind]!)}
+				/>
 			))}
 		</Box>
 	);
