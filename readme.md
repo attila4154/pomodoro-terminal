@@ -5,6 +5,7 @@
 - [ ] feat: setup > custom modes
 - [ ] feat: setup > bigger brakes once every n times
 - [ ] feat: config > continuous mode: on|off
+- [ ] feat: confgi > when timer ends, option to prolong it?
 - [ ] feat:background noises
 - [ ] feat:history tab, global + one day
 - [ ] feat: rerender on resize
@@ -13,3 +14,4 @@
 - [ ] fix installation on the new machine (related to robotjs)
 - [ ] feat: add pomodoro icon to the notification
 - [ ] feat: make app unscrollable
+- [ ] feat: apple music / spotify - show current playing song?

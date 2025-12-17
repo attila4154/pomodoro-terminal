@@ -69,18 +69,21 @@ function App() {
 			<Box flexDirection="column">
 				<Tabs tab={tab} setTab={setTab} />
 				<CenteredBox>
-					{tab === 1 && <Counter init={timer} />}
-					{tab === 2 && (
-						<Setup
-							timer={timer}
-							timers={timers}
-							setTimers={setTimers}
-							setTimer={n => {
-								setTimer(n);
-								setTab(1);
-							}}
-						/>
-					)}
+					<Counter
+						init={timer}
+						visible={tab === 1}
+						key={`${timer[0]}:${timer[1]}`}
+					/>
+					<Setup
+						visible={tab === 2}
+						timer={timer}
+						timers={timers}
+						setTimers={setTimers}
+						setTimer={n => {
+							setTimer(n);
+							setTab(1);
+						}}
+					/>
 					{tab === 9 && <Text>Bye!</Text>}
 				</CenteredBox>
 				{showFooter && <ActionsFooter />}

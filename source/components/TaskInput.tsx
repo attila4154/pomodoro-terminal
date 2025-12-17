@@ -1,17 +1,12 @@
 import {Box, Text, useInput} from 'ink';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {COLORS} from '../config/colors.js';
-import {KeyPressActionContext} from '../context/KeyPressActionContext.js';
+import {useIsTyping} from '../context/KeyPressActionContext.js';
 
 export function TaskInput({setTask}: {setTask: (task: string | null) => void}) {
 	const [taskInput, setTaskInput] = useState('');
-	const {showAll, hideAll} = useContext(KeyPressActionContext);
 
-	useEffect(() => {
-		hideAll();
-
-		return showAll;
-	}, []);
+	useIsTyping(true);
 
 	useInput((input, key) => {
 		if (key.return) {

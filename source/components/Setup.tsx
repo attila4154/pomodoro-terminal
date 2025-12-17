@@ -50,11 +50,13 @@ function Option({
 export type Timer = [number, number];
 
 export function Setup({
+	visible,
 	timers,
 	setTimers,
 	timer,
 	setTimer,
 }: {
+	visible: boolean;
 	timers: Timer[];
 	setTimers: Dispatch<SetStateAction<Timer[]>>;
 	timer: Timer;
@@ -69,6 +71,10 @@ export function Setup({
 	const maxChoice = timers.length;
 
 	useEffect(() => {
+		if (!visible) {
+			return;
+		}
+
 		register({
 			key: ['downArrow', 'j', ['ctrl', 'n']],
 			description: 'next',
@@ -90,7 +96,11 @@ export function Setup({
 			unregister({description: 'next'});
 			unregister({description: 'prev'});
 		};
-	}, [maxChoice]);
+	}, [maxChoice, visible]);
+
+	if (!visible) {
+		return null;
+	}
 
 	return (
 		<Box flexDirection="column">

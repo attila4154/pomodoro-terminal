@@ -50,7 +50,13 @@ function useFocusMode({
 	}, [isRunning, isFocus]);
 }
 
-export function Counter({init}: {init: readonly [number, number]}) {
+export function Counter({
+	init,
+	visible,
+}: {
+	visible: boolean;
+	init: readonly [number, number];
+}) {
 	init = [init[0] * 60, init[1] * 60];
 	const [focusTime, restTime] = init;
 
@@ -99,7 +105,7 @@ export function Counter({init}: {init: readonly [number, number]}) {
 	}
 
 	useEffect(() => {
-		if (showTaskInput) {
+		if (showTaskInput || !visible) {
 			return;
 		}
 		register({
@@ -147,7 +153,15 @@ export function Counter({init}: {init: readonly [number, number]}) {
 			unregister({key: 't'});
 			unregister({key: 'e'});
 		};
-	}, [register, setIsRunning, isRunning, isFocus, showTaskInput, task]);
+	}, [
+		register,
+		setIsRunning,
+		isRunning,
+		isFocus,
+		showTaskInput,
+		task,
+		visible,
+	]);
 
 	let color = undefined;
 	if (isFocus) {
@@ -156,6 +170,10 @@ export function Counter({init}: {init: readonly [number, number]}) {
 	} else {
 		if (isRunning) color = COLORS.REST_NOT_RUNNING;
 		else color = COLORS.REST_RUNNING;
+	}
+
+	if (!visible) {
+		return null;
 	}
 
 	return (
