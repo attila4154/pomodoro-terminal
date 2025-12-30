@@ -9,6 +9,7 @@
 	},
 	"scripts": {
 		"build": "tsc",
+		"start": "node dist/cli.js",
 		"dev": "tsc --watch"
 	},
 	"files": [
